@@ -10,57 +10,68 @@ use nms::types::{
 	user::User,
 };
 
+const COLOURSCHEMES: &str = "/v1/colourschemes.json";
+
+const GAME: &str = "/v1/games/{game_domain_name}.json";
+const GAMES: &str = "/v1/games.json";
+
+const MOD: &str = "/v1/games/{game_domain_name}/mods/{mod_id}.json";
+const MOD_CHANGELOGS: &str = "/v1/games/{game_domain_name}/mods/{mod_id}/changelogs.json";
+
+const MODS_ADDED: &str = "/v1/games/{game_domain_name}/mods/latest_added.json";
+const MODS_UPDATED: &str = "/v1/games/{game_domain_name}/mods/latest_updated.json";
+const MODS_TRENDING: &str = "/v1/games/{game_domain_name}/mods/trending.json";
+
+const FILE: &str = "/v1/games/{game_domain_name}/mods/{mod_id}/files/{file_id}.json";
+const FILES: &str = "/v1/games/{game_domain_name}/mods/{mod_id}/files.json";
+const FILE_DOWNLOAD: &str = "/v1/games/{game_domain_name}/mods/{mod_id}/files/{file_id}/download_link.json";
+
+const USERS_VALIDATE: &str = "/v1/users/validate.json";
+const USERS_TRACKED: &str = "/v1/user/tracked_mods.json";
+const USERS_ENDORSEMENTS: &str = "/v1/user/endorsements.json";
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 	let opts = NmsOpts::parse();
-	//let game = "stardewvalley";
-	let route = &opts.route;
+	let route = &opts.route
+		.replace("{game_domain_name}", &opts.game)
+		.replace("{file_id}", &opts.file_id)
+		.replace("{mod_id}", &opts.mod_id);
 
-	let client = Client::new();
-
-	let req = client
+	let req = Client::new()
 		.get(format!("https://api.nexusmods.com/{}", route))
 		.header("User-Agent", "reqwest/0.11.14")
 		.header("apikey", &opts.apikey);
 
-	match opts.route.as_str() {
-
-		//format!("/v1/games/{}/mods/updated.json", game) => println!("ROUTE: {}", &opts.route),
-		"/v1/games.json" => println!("ROUTE: {}", &opts.route),
-		"/v1/users/validate.json" => println!("ROUTE: {}", &opts.route),
-		_ => println!("Unrecognized route: {}", &opts.route),
-	}
-
-	// TODO: match request to output type
 	let res = req
 		.send()
-		.await?
-		.json::<Mod>()
-		//.json::<Vec<Mod>>()
-		//.json::<Game>()
-		//.json::<User>()
 		.await?;
 
-	println!("{:#?}", res);
+	match opts.route.as_str() {
+
+		COLOURSCHEMES => todo!(),
+
+		GAME => println!("{:#?}", res.json::<Game>().await?),
+		GAMES => println!("{:#?}", res.json::<Vec<Game>>().await?),
+
+		MOD => println!("{:#?}", res.json::<Mod>().await?),
+		MOD_CHANGELOGS => println!("{:#?}", res.json::<Vec<Mod>>().await?),
+
+		MODS_ADDED => println!("{:#?}", res.json::<Vec<Mod>>().await?),
+		MODS_UPDATED => println!("{:#?}", res.json::<Vec<Mod>>().await?),
+		MODS_TRENDING => println!("{:#?}", res.json::<Vec<Mod>>().await?),
+
+		FILE => todo!(),
+		FILES => todo!(),
+		FILE_DOWNLOAD => todo!(),
+
+		USERS_VALIDATE => println!("{:#?}", res.json::<User>().await?),
+		USERS_TRACKED => todo!(),
+		USERS_ENDORSEMENTS => todo!(),
+
+		_ => println!("Nothing configured for this route: {}", opts.route.as_str()),
+	}
+
 	Ok(())
 }
-
-// /v1/games/{game_domain_name}/mods/{mod_id}/changelogs.json
-// /v1/games/{game_domain_name}/mods/latest_added.json
-// /v1/games/{game_domain_name}/mods/latest_updated.json
-// /v1/games/{game_domain_name}/mods/trending.json
-// /v1/games/{game_domain_name}/mods/{id}.json
-// /v1/games/{game_domain_name}/mods/md5_search/{md5_hash}.json
-// /v1/games/{game_domain_name}/mods/{id}/endorse.json
-// /v1/games/{game_domain_name}/mods/{id}/abstain.json
-// /v1/games/{game_domain_name}/mods/{mod_id}/files.json
-// /v1/games/{game_domain_name}/mods/{mod_id}/files/{file_id}.json
-// /v1/games/{game_domain_name}/mods/{mod_id}/files/{id}/download_link.json
-// /v1/games.json
-// /v1/games/{game_domain_name}.json
-// /v1/user/tracked_mods.json
-// /v1/user/tracked_mods.json
-// /v1/user/tracked_mods.json
-// /v1/user/endorsements.json
-// /v1/colourschemes.json

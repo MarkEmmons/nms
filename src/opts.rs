@@ -12,4 +12,16 @@ pub struct NmsOpts {
 	/// The route to query
 	#[arg(short, long)]
 	pub route: String,
+
+	/// The game
+	#[arg(short, long, default_value = "stardewvalley")]
+	pub game: String,
+
+	/// The mod
+	#[arg(short, long, default_value = "")]
+	pub mod_id: String,
+
+	/// The file
+	#[arg(short, long, default_value = "")]
+	pub file_id: String,
 }

@@ -52,21 +52,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 		COLOURSCHEMES => todo!(),
 
-		GAME => println!("{:#?}", res.json::<Game>().await?),
-		GAMES => println!("{:#?}", res.json::<Vec<Game>>().await?),
+		GAME => println!("{}", serde_json::to_string(&res.json::<Game>().await?)?),
 
-		MOD => println!("{:#?}", res.json::<Mod>().await?),
-		MOD_CHANGELOGS => println!("{:#?}", res.json::<Vec<Mod>>().await?),
+		GAMES => println!("{}", serde_json::to_string(&res.json::<Vec<Game>>().await?)?),
 
-		MODS_ADDED => println!("{:#?}", res.json::<Vec<Mod>>().await?),
-		MODS_UPDATED => println!("{:#?}", res.json::<Vec<Mod>>().await?),
-		MODS_TRENDING => println!("{:#?}", res.json::<Vec<Mod>>().await?),
+		MOD => println!("{}", serde_json::to_string(&res.json::<Mod>().await?)?),
+
+		MOD_CHANGELOGS |
+		MODS_ADDED     |
+		MODS_UPDATED   |
+		MODS_TRENDING => println!("{}", serde_json::to_string(&res.json::<Vec<Mod>>().await?)?),
 
 		FILE => todo!(),
 		FILES => todo!(),
 		FILE_DOWNLOAD => todo!(),
 
-		USERS_VALIDATE => println!("{:#?}", res.json::<User>().await?),
+		USERS_VALIDATE => println!("{}", serde_json::to_string(&res.json::<User>().await?)?),
+
 		USERS_TRACKED => todo!(),
 		USERS_ENDORSEMENTS => todo!(),
 
